@@ -3,9 +3,6 @@
 ## Possible Improvements
 
 - Make a config file for things such as profile tag, wait times, etc.
-- Make extra columns on the csv file for calculations of the data:
-    - percent views that liked
-    - percent liked that favorited
 - Format the output file better
     - bold titles
     - change width of columns
