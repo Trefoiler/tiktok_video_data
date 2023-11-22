@@ -21,7 +21,7 @@ def get_num_videos(html: str) -> int:
 
 # Load all videos on the page
 def load_all_videos(driver: webdriver.Chrome,
-                    initial_wait: int = 7,
+                    initial_wait: int = 5,
                     scroll_wait: int = 3):
     time.sleep(initial_wait)
     
