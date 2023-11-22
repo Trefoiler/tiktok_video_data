@@ -3,6 +3,10 @@
 ## Possible Improvements
 
 - Make a config file for things such as profile tag, wait times, etc.
+- Make extra columns on the csv file for calculations of the data:
+    - percent views that liked
+    - percent liked that favorited
+- Add conditional formatting to the output csv file.
 
 ### `tiktok_scraper/profile_scraper.py`
 
@@ -11,5 +15,6 @@
 
 ### `tiktok_scraper/video_scraper.py`
 
+- Get rid of the wait time and make it just get the data once it's available. 
 - Make it get the full description. 
 - Only count comments that aren't the creator. 
