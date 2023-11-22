@@ -18,7 +18,7 @@ def analyze_data(list_of_dicts: list) -> pd.DataFrame:
     return video_data
 
 
-def save_data(dataframe: pd.DataFrame, user_tag: str) -> None:
+def save_data_to_csv(dataframe: pd.DataFrame, user_tag: str) -> None:
     print("Saving data...")
     
     # Create the filename using the user tag and the current date and time
@@ -32,3 +32,39 @@ def save_data(dataframe: pd.DataFrame, user_tag: str) -> None:
     print(f"Finished saving data to {file_name}\n")
 
 
+if __name__ == '__main__':
+    # Create a very list of dictionaries to use as a sample DataFrame
+    # Has a link, title, description, views, likes, comments, favorites, 
+    # percent viewed that liked, and percent liked that favorited
+    sample_data = [
+        {
+            'link': 'https://www.tiktok.com/@aimusicpainter/video/7303004908452728095',
+            'title': 'Can You Hear the Moon',
+            'description': 'AI generated images of Can You Hear the Moon by Grady ',
+            'views': 654,
+            'likes': 32,
+            'comments': 5,
+            'favorites': 2
+        },
+        {
+            'link': 'https://www.tiktok.com/@aimusicpainter/video/7303010234757418270',
+            'title': 'Ashes',
+            'description': 'AI generated images of Ashes by Stellar ',
+            'views': 679,
+            'likes': 32,
+            'comments': 2,
+            'favorites': 1
+        },
+        {
+            'link': 'https://www.tiktok.com/@aimusicpainter/video/7303045128086637855',
+            'title': 'Walking On A Dream',
+            'description': 'AI generated images of Walking On A Dream by Empire of the Sun ',
+            'views': 1638,
+            'likes': 106,
+            'comments': 3,
+            'favorites': 6
+        }
+    ]
+    
+    sample_data = analyze_data(sample_data)
+    save_data_to_csv(sample_data, 'sample_data')
