@@ -2,8 +2,8 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
 
-from profile_scraper import get_all_video_links_with_views
-from video_scraper import scrape_video
+from tiktok_scraper.profile_scraper import get_all_video_links_with_views
+from tiktok_scraper.video_scraper import scrape_video
 
 
 def load_bar(current: int, total: int, bar_length: int = 50) -> str:
