@@ -6,7 +6,11 @@
 - Make extra columns on the csv file for calculations of the data:
     - percent views that liked
     - percent liked that favorited
-- Add conditional formatting to the output csv file.
+- Format the output file better
+    - bold titles
+    - change width of columns
+    - make percents appear as percents
+    - add conditional formatting to numerical values
 
 ### `tiktok_scraper/profile_scraper.py`
 
