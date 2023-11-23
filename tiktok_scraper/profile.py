@@ -24,13 +24,14 @@ class Profile:
     }
     
     
-    def __init__(self):
+    def __init__(self, scrape_videos: bool = True):
         # tag of the user to scrape; set in config.py
         self.user_tag: str = config.USER_TAG
         # set up video list
         self.videos: list[Video] = self._set_up_videos()
         self.num_videos = len(self.videos)
-        self._scrape_video_info()
+        if scrape_videos:
+            self._scrape_video_info()
     
     
     def _set_up_videos(self) -> list[Video]:
