@@ -10,6 +10,11 @@ Format: '@username' (example: '@aimusicpainter')
 USER_TAG: str = '@aimusicpainter'
 
 '''
+The maximum number of videos to scrape from the profile.
+'''
+MAX_VIDEOS: int = 3
+
+'''
 When scrolling to load videos on a profile,
 the max allowble time to wait for videos to load after scrolling.
 '''

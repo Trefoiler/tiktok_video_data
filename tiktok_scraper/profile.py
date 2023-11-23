@@ -73,14 +73,23 @@ class Profile:
             raise Exception("Number of video links and view counts are not the same.")
         num_videos = len(video_link_tags)
         
-        print("Finished scraping for video links and views.")
+        # Ensure the number of videos is not greater than the max
+        if num_videos > config.MAX_VIDEOS:
+            print(f"Number of videos ({num_videos}) is greater than the max ({config.MAX_VIDEOS}).")
+            print(f"Only using the first {config.MAX_VIDEOS} videos.")
+            num_videos = config.MAX_VIDEOS
+            video_link_tags = video_link_tags[:config.MAX_VIDEOS]
+            video_view_tags = video_view_tags[:config.MAX_VIDEOS]
+        
+        print("Finished scraping for video links and views.\n")
         
         # Create the list of videos using the links and view counts
+        print("Creating list of Video objects...")
         videos: List[Video] = []
         for link_tag, view_tag in zip(video_link_tags, video_view_tags):
             videos.append(Video(link_tag['href'], int(view_tag.text)))
         
-        print("Created list of Video objects.\n")
+        print("Finished creating list of Video objects.\n")
         
         return videos
     
@@ -121,6 +130,11 @@ class Profile:
             # Get the number of videos on the page
             last_num_videos = num_videos
             num_videos = cls._get_num_videos(driver.page_source)
+            
+            # If the number of videos is already the max, stop scrolling
+            if num_videos == config.MAX_VIDEOS:
+                print('Stopped scrolling because the max number of videos was reached.')
+                break
             
             # If new videos were found, reset the timer
             if num_videos > last_num_videos:
@@ -178,9 +192,10 @@ class Profile:
         for col in df.columns:
             # Check if the column has a custom width
             if col in config.CUSTOM_COLUMN_WIDTHS:
-                # Use the custom width
-                widths.append(config.CUSTOM_COLUMN_WIDTHS[col])
-                continue
+                if config.CUSTOM_COLUMN_WIDTHS[col] is not None:
+                    # Use the custom width
+                    widths.append(config.CUSTOM_COLUMN_WIDTHS[col])
+                    continue
             
             # Length of the column header
             col_len = len(str(col))
@@ -215,6 +230,7 @@ class Profile:
         for section in config.EXCLUDED_VIDEO_DATA:
             print(f"Removing section: {section}")
             video_data = video_data.drop(section, axis=1)
+        print("Finished removing excluded sections.")
         
         
         # Get the file name and sheet name
@@ -230,11 +246,11 @@ class Profile:
         worksheet = writer.sheets[sheet_name]
         
         # Set the column widths
-        # print("Setting column widths...")
+        print("Setting column widths...")
         column_widths = Profile._get_col_widths(video_data)
-        # for i, width in enumerate(column_widths):
-        #     worksheet.set_column(i, i, width)
-        # print("Finished setting column widths.\n")
+        for i, width in enumerate(column_widths):
+            worksheet.set_column(i, i, width)
+        print("Finished setting column widths.")
         
         # Apply conditional formatting to columns with numerical content
         print("Applying conditional formatting...")
