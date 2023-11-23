@@ -8,7 +8,7 @@ def analyze_data(list_of_dicts: list) -> pd.DataFrame:
     
     video_data = pd.DataFrame(list_of_dicts)
     
-    # Create a new column for percent viewed that liked (round to 2 decimal places)
+    # Create a new column for percent viewed that liked
     video_data['percent viewed that liked'] = round(video_data['likes'] / video_data['views'], 4)
     
     # Create a new column for percent liked that favorited
@@ -58,7 +58,7 @@ def save_data_to_xlsx(df: pd.DataFrame, user_tag: str,
     print("Saving data...")
     
     file_name = get_file_name(user_tag) + 'xlsx'
-    sheet_name = 'TikTok Video Data'
+    sheet_name = 'Video Data'
     links_column_width = 5
     
     

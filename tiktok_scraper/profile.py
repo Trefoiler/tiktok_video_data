@@ -1,8 +1,10 @@
 from typing import List
 from selenium import webdriver
 from bs4 import BeautifulSoup
-import time
 import pandas as pd
+import time
+from datetime import datetime
+import xlsxwriter.utility
 import config
 from utils.load_bar import load_bar
 from tiktok_scraper.video import Video
@@ -141,7 +143,7 @@ class Profile:
         print("Finished scraping each video's info.\n")
     
     
-    def video_data_to_df(self) -> pd.DataFrame:
+    def _video_data_to_df(self) -> pd.DataFrame:
         '''
         Converts the video data to a DataFrame.
         '''
@@ -151,6 +153,112 @@ class Profile:
             data_from_all_videos.append(video.data)
         
         return pd.DataFrame(data_from_all_videos)
+    
+    
+    def _get_output_file_name(self) -> str:
+        '''
+        Gets the file name for the report.
+        '''
+        
+        # Create the filename using the user tag and the current date and time
+        current_time = datetime.now()
+        time_str = current_time.strftime("(%Y-%m-%d_%H.%M.%S)")
+        file_name = f"reports/{time_str}{self.user_tag}.xlsx"
+        
+        return file_name
+    
+    
+    @staticmethod
+    def _get_col_widths(df: pd.DataFrame) -> list[int]:
+        '''
+        Gets the column widths for the report.
+        '''
+        
+        widths = []
+        for col in df.columns:
+            # Check if the column has a custom width
+            if col in config.CUSTOM_COLUMN_WIDTHS:
+                # Use the custom width
+                widths.append(config.CUSTOM_COLUMN_WIDTHS[col])
+                continue
+            
+            # Length of the column header
+            col_len = len(str(col))
+            # Maximum length of data in the column
+            max_data_len = max([len(str(val)) for val in df[col]])
+            # Choose the max between header length and data length
+            max_len = max(col_len, max_data_len)
+            # Append the maximum length
+            widths.append(max_len)
+        
+        return widths
 
     
     
+    def save_data_to_xlsx(self) -> None:
+        '''
+        Saves the video data to an Excel file.
+        '''
+        print("Saving data...")
+        
+        # Save the video data to a dataframe
+        video_data: pd.DataFrame = self._video_data_to_df()
+        
+        # Analyze the data
+        print("Analyzing data...")        
+        video_data['percent viewed that liked'] = round(video_data['num likes'] / video_data['num views'], 4)
+        video_data['percent liked that favorited'] = round(video_data['num favorites'] / video_data['num likes'], 4)
+        print("Finished analyzing data")
+        
+        # Remove the sections specified in the config file
+        print("Removing excluded sections...")
+        for section in config.EXCLUDED_VIDEO_DATA:
+            print(f"Removing section: {section}")
+            video_data = video_data.drop(section, axis=1)
+        
+        
+        # Get the file name and sheet name
+        output_file: str = self._get_output_file_name()
+        sheet_name = 'Video Data'
+        
+        # Create a Pandas Excel writer using XlsxWriter as the engine
+        writer = pd.ExcelWriter(output_file, engine='xlsxwriter')
+        # Convert the DataFrame to an XlsxWriter Excel object
+        video_data.to_excel(writer, sheet_name=sheet_name, index=False)
+        # Get the xlsxwriter workbook and worksheet objects
+        workbook = writer.book
+        worksheet = writer.sheets[sheet_name]
+        
+        # Set the column widths
+        # print("Setting column widths...")
+        column_widths = Profile._get_col_widths(video_data)
+        # for i, width in enumerate(column_widths):
+        #     worksheet.set_column(i, i, width)
+        # print("Finished setting column widths.\n")
+        
+        # Apply conditional formatting to columns with numerical content
+        print("Applying conditional formatting...")
+        for i, col in enumerate(video_data.columns):
+            if pd.api.types.is_numeric_dtype(video_data[col]):
+                # Excel column letter (A, B, C, ...)
+                col_letter = xlsxwriter.utility.xl_col_to_name(i)
+                
+                # Define the Excel range to apply the formatting
+                excel_range = f'{col_letter}2:{col_letter}{len(video_data) + 1}'  # +1 for header row
+
+                # Apply the conditional formatting
+                worksheet.conditional_format(excel_range, {'type': '3_color_scale',
+                                                        'min_color': "#e67c73",  # Red
+                                                        'mid_color': "#ffd666",  # Yellow
+                                                        'max_color': "#57bb8a"}) # Green
+                
+                # Apply the percent formatting to columns with 'percent' in the name
+                if 'percent' in col.lower():
+                    # Apply the percent formatting
+                    worksheet.set_column(i, i, column_widths[i], workbook.add_format({'num_format': '0.00%'})) # type: ignore
+        print("Finished applying conditional formatting.")
+        
+        # Close the Pandas Excel writer and output the Excel file
+        writer.close()
+        
+        print(f"Finished saving data to {output_file}\n")

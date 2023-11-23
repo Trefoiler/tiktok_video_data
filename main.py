@@ -15,5 +15,7 @@ from utils.save_video_data import analyze_data, save_data_to_xlsx
 # print(f"Finished in {time.time() - start_time} seconds")
 
 from tiktok_scraper.profile import Profile
+import pandas as pd
+
 profile = Profile()
-print(profile.video_data_to_df())
+profile.save_data_to_xlsx()
