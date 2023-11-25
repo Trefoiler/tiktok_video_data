@@ -12,7 +12,7 @@ USER_TAG: str = '@aimusicpainter'
 '''
 The maximum number of videos to scrape from the profile.
 '''
-MAX_VIDEOS: int = 50
+MAX_VIDEOS: int = 3
 
 '''
 When scrolling to load videos on a profile,

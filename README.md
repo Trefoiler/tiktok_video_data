@@ -2,6 +2,7 @@
 
 ## TODO
 
+- Exponential back-off on shaking. 
 - Get all comments for a video?
 
 ## Known Bugs
